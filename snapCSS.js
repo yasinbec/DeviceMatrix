@@ -6,7 +6,8 @@
     var $html = $('html'),
       $device,
       $version,
-      $orientation;
+      $orientation,
+      $elements = [];
 
 
     // iOS 8 and up
@@ -64,19 +65,40 @@
 
 
     // Nexus 7
-
-    // Kindle Fire Silk
-
-    // Kindle Fire Chrome
+    // Kindle Fire
 
     // iPad
-
     // MacOS
     // Window 7
     // Window 8
-    // Window 8.1
     // Window 10
+    // Android
+    // http://stackoverflow.com/questions/9514179/how-to-find-the-operating-system-version-using-javascript
+    var os = 'unknown';
+    var clientStrings = [
+        {s:'Windows-10', r:/(Windows 10.0|Windows NT 10.0)/},
+        {s:'Windows-8.1', r:/(Windows 8.1|Windows NT 6.3)/},
+        {s:'Windows-8', r:/(Windows 8|Windows NT 6.2)/},
+        {s:'Windows-7', r:/(Windows 7|Windows NT 6.1)/},
+        {s:'Android', r:/Android/},
+        {s:'Kindle-Fire', r:/Silk/},
+        {s:'Nexus', r:/Nexus/},
+        {s:'Open-BSD', r:/OpenBSD/},
+        {s:'Sun-OS', r:/SunOS/},
+        {s:'Linux', r:/(Linux|X11)/},
+        {s:'iOS', r:/(iPad)/},
+        {s:'Mac-OS-X', r:/Mac OS X/},
+        {s:'Mac-OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/}
+    ];
+    for (var id in clientStrings) {
+        var cs = clientStrings[id];
+        if (cs.r.test(navigator.userAgent)) {
+            os = cs.s;
+            break;
+        }
+    }
 
+    $device = os;    
 
     // IE9
     // IE10
