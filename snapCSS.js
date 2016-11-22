@@ -6,8 +6,7 @@
     var $html = $('html'),
       $device,
       $version,
-      $orientation,
-      $elements = [];
+      $orientation;
 
 
     // iOS 8 and up
@@ -66,7 +65,6 @@
 
     // Nexus 7
     // Kindle Fire
-
     // iPad
     // MacOS
     // Window 7
@@ -82,7 +80,7 @@
         {s:'Windows-7', r:/(Windows 7|Windows NT 6.1)/},
         {s:'Android', r:/Android/},
         {s:'Kindle-Fire', r:/Silk/},
-        {s:'Nexus', r:/Nexus/},
+        {s:'Nexus', r:/Silk/},
         {s:'Open-BSD', r:/OpenBSD/},
         {s:'Sun-OS', r:/SunOS/},
         {s:'Linux', r:/(Linux|X11)/},
@@ -182,7 +180,7 @@
       $orientation = doOnOrientationChange();  
 
 
-    return $html.addClass($platform $device $version $orientation);
+    return $html.addClass($device +' '+ $version +' '+ $orientation);
 
   }
 
