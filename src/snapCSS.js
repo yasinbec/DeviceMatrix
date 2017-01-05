@@ -1,17 +1,18 @@
 (function($) {
 
   // Create plugin
-  $.fn.snapCSS = function() {
+  $.fn.deviceMatrix = function() {
 
     var $html = $('html'),
+      $platform,
       $device,
       $version,
       $orientation;
 
-
     // iOS 8 and up
     // iOS 9 and up
     // iOS 10 and up
+
     function iOSversion() {
       if (/iP(hone|od|ad)/.test(navigator.platform)) {
         // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
@@ -20,13 +21,16 @@
       }
     }
 
-    $version = iOSversion();
-
     // iPhone 5
     // iPhone 6
     // iPhone 7
+
     function isIphone() {
       return !!navigator.userAgent.match(/iPhone/i);
+    }
+
+    function isIPad() {
+      return !!navigator.userAgent.match(/iPad/i);
     }
 
     function iPhoneVersion() {
@@ -34,57 +38,70 @@
         var iHeight = window.screen.height;
         var iWidth = window.screen.width;
         if (iWidth === 320 && iHeight === 480) {
-          return "iPhone4";
+          return 'iPhone4';
         }
         else if (iWidth === 375 && iHeight === 667) {
-          return "iPhone6";
+          return 'iPhone6';
         }
         else if (iWidth === 414 && iHeight === 736) {
-          return "iPhone6+";
+          return 'iPhone6Plus';
         }
         else if (iWidth === 320 && iHeight === 568) {
-          return "iPhone5";
+          return 'iPhone5';
         }
         else if (iHeight <= 480) {
-          return "iPhone2-3";
+          return 'iPhone2-3';
         }
+
         return '';
+      } 
+    }
+
+
+    function iPad() {
+      if(isIPad()) {
+        return 'iPad';
       }
     }
 
-    $device = iPhoneVersion();
+    // Samsung Galaxy S4-7
 
-    // Samsung Galaxy S4
-    // Samsung Galaxy S5
-    // Samsung Galaxy S6
-    // Samsung Galaxy S7
-
-    // Function to follow
-
+    var samsungDevice = '';
+    if(navigator.userAgent.match(/SAMSUNG|SGH-[I|N|T]|GT-[I|P|N]|SM-[N|P|T|Z|G]|SHV-E|SCH-[I|J|R|S]|SPH-L/i))  {
+      samsungDevice = 'samsung-phone';
+    }
 
 
     // Nexus 7
     // Kindle Fire
-    // iPad
+
+    var deviceTablet = '';
+    var deviceStrings = [
+        //{s:'Android', r:/Android/},
+        {s:'Kindle-Fire', r:/Silk/},
+        {s:'Nexus', r:/Nexus/}
+        //{s:'iPad', r:/(iPad)/},
+    ];
+    for (var id in deviceStrings) {
+        var cs = deviceStrings[id];
+        if (cs.r.test(navigator.userAgent)) {
+            deviceTablet = cs.s;
+            break;
+        }
+    }
+
     // MacOS
     // Window 7
     // Window 8
     // Window 10
     // Android
     // http://stackoverflow.com/questions/9514179/how-to-find-the-operating-system-version-using-javascript
-    var os = 'unknown';
+    var os = '';
     var clientStrings = [
         {s:'Windows-10', r:/(Windows 10.0|Windows NT 10.0)/},
         {s:'Windows-8.1', r:/(Windows 8.1|Windows NT 6.3)/},
         {s:'Windows-8', r:/(Windows 8|Windows NT 6.2)/},
         {s:'Windows-7', r:/(Windows 7|Windows NT 6.1)/},
-        {s:'Android', r:/Android/},
-        {s:'Kindle-Fire', r:/Silk/},
-        {s:'Nexus', r:/Silk/},
-        {s:'Open-BSD', r:/OpenBSD/},
-        {s:'Sun-OS', r:/SunOS/},
-        {s:'Linux', r:/(Linux|X11)/},
-        {s:'iOS', r:/(iPad)/},
         {s:'Mac-OS-X', r:/Mac OS X/},
         {s:'Mac-OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/}
     ];
@@ -96,7 +113,6 @@
         }
     }
 
-    $device = os;    
 
     // IE9
     // IE10
@@ -128,7 +144,6 @@
       return false;
     }
 
-    $version = detectIE();
 
     // Chrome
     // Firefox
@@ -154,11 +169,12 @@
       return $browser; 
     }
 
-    $version = browserName();
 
     // Bonus Feature
+    // IF Mobile
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
 
-    function doOnOrientationChange()
+      function doOnOrientationChange()
       {
         var orientation;
         switch(window.orientation) 
@@ -177,10 +193,48 @@
       window.addEventListener('orientationchange', doOnOrientationChange);
      
       // Initial execution if needed
-      $orientation = doOnOrientationChange();  
+      $orientation = doOnOrientationChange();
+
+    } else {
+      $orientation = '';
+    }
+
+    $device = iPhoneVersion();
+    $device = iPad();
+    $device = samsungDevice;
+    $device = deviceTablet;
+
+    if(iPhoneVersion()) {
+      $device = iPhoneVersion();
+    } else if (iPad()) {
+      $device = iPad();
+    } else if(samsungDevice) {
+      $device = samsungDevice;
+    } else if(deviceTablet) {
+      $device = deviceTablet;
+    }
+
+    if(iOSversion()) {
+      $version = iOSversion();
+    } else if(browserName()){
+      $version = browserName();
+    } else if(detectIE()) {
+      $version = detectIE();
+    }
+
+    if(!isIphone() && !isIPad()) {
+      $platform = os;
+    } else {
+      $platform = '';
+    }
+
+    console.log($platform);
+    console.log($device);
+    console.log($version);
+    console.log($orientation);
 
 
-    return $html.addClass($device +' '+ $version +' '+ $orientation);
+    return $html.addClass($platform +' '+ $device +' '+ $version +' '+ $orientation);
 
   }
 
